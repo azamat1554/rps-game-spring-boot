@@ -4,7 +4,6 @@ let socket;
 let chatInput;
 let urlInput;
 let currentChoice;
-// let gameId;
 let playerId;
 
 window.onload = function init() {
@@ -47,7 +46,6 @@ async function connectToGame() {
 function createWebSocketConnection(gameId) {
   let url = "ws://" + location.host + "/game/" + gameId;
   socket = new WebSocket(url);
-  // socket.onopen = onOpen;
   socket.onclose = onClose;
   socket.onerror = onError;
   socket.onmessage = onMessage;
@@ -56,15 +54,6 @@ function createWebSocketConnection(gameId) {
 //============================================
 //            WebSocket methods
 //============================================
-// function onOpen(event) {
-//   var hash = location.hash.replace('#', '');
-//   var object = {
-//     gameId: hash,
-//     type: 'ID'
-//   };
-//
-//   socket.send(JSON.stringify(object));
-// }
 
 function onClose(event) {
   if (event.wasClean) {
@@ -89,7 +78,7 @@ function onError(error) {
 function onMessage(event) {
   console.log('onMessage: ' + event.data.toString());
 
-  var incomingMessage = JSON.parse(event.data);
+  let incomingMessage = JSON.parse(event.data);
   switch (incomingMessage.type) {
     case 'MESSAGE':
       showMessage(incomingMessage.message, false);
@@ -98,14 +87,9 @@ function onMessage(event) {
       showResult(incomingMessage);
       break;
     case 'CONNECTION':
-      // gameId = incomingMessage.gameId;
       playerId = incomingMessage.id;
       showConnection(incomingMessage.connection);
       break;
-      // case 'ID':
-      // window.location.hash = incomingMessage.gameId;
-      // urlInput.value = window.location.href;
-      // playerId = incomingMessage.id;
   }
 }
 
@@ -114,22 +98,22 @@ function onMessage(event) {
 //===========================================
 
 function showMessage(message, isYour) {
-  var newMessageElem = document.createElement('div');
+  let newMessageElem = document.createElement('div');
   newMessageElem.classList.add('message-style');
   newMessageElem.classList.add(isYour ? 'your-message' : 'opp-message');
   newMessageElem.appendChild(document.createTextNode(message));
 
-  var parentElem = document.createElement('div');
+  let parentElem = document.createElement('div');
   parentElem.classList.add('media');
   parentElem.appendChild(newMessageElem);
 
-  var block = document.getElementById('message-body');
+  let block = document.getElementById('message-body');
   block.appendChild(parentElem);
   block.scrollTop = block.scrollHeight; //чтобы прокручивалось в конец
 }
 
 function sendMessage(message) {
-  var msgJObj = {
+  let msgJObj = {
     id: playerId,
     type: "MESSAGE",
     message: message
@@ -143,7 +127,7 @@ function sendMessage(message) {
 }
 
 function showResult(resultObj) {
-  var header = document.querySelector('.result-header');
+  let header = document.querySelector('.result-header');
 
   header.textContent = resultObj.result;
 
@@ -161,7 +145,7 @@ function showResult(resultObj) {
 }
 
 function restartGame() {
-  var children = document.querySelector('#select-box').children;
+  let children = document.querySelector('#select-box').children;
 
   toggleHidden(children, 1, 4);
   children[0].firstElementChild.hidden = false;
@@ -181,14 +165,13 @@ function restartGame() {
 }
 
 function toggleHidden(elements, start, end) {
-  for (var i = start; i < end; i++) {
+  for (let i = start; i < end; i++) {
     elements[i].hidden = !elements[i].hidden;
   }
 }
 
 function sendResult(choice) {
   var object = {
-    // gameId: gameId,
     id: playerId,
     type: "RESULT",
     choice: choice
@@ -264,11 +247,11 @@ function clickImage(event) {
 
 // Показать полупрозрачный DIV, затеняющий всю страницу
 function showCover(reason) {
-  var cover = document.createElement('div');
+  let cover = document.createElement('div');
   cover.id = 'cover';
   cover.classList.add('cover');
 
-  var windowDiv = document.createElement('div');
+  let windowDiv = document.createElement('div');
   windowDiv.classList.add('window');
   windowDiv.textContent = reason;
   cover.appendChild(windowDiv);

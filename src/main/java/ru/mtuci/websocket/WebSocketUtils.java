@@ -1,35 +1,21 @@
 package ru.mtuci.websocket;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.util.HtmlUtils;
 
 /**
  * Класс реализующий методы отправки JSON сообщений.
  */
 public final class WebSocketUtils {
 
-  public static void sendIdMessage(WebSocketSession session, String playerId) {
-    try {
-      String idMessage = new JSONObject()
-          .put("type", Type.ID.toString())
-//          .put("gameId", gameId)
-          .put("id", playerId)
-          .toString();
-
-      if (session.isOpen()) {
-        session.sendMessage(new TextMessage(idMessage));
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
+  public static final Logger log = LoggerFactory.getLogger(WebSocketUtils.class);
 
   public static void sendConnectionMessage(WebSocketSession session, String playerId) {
     try {
       String connectionMessage = new JSONObject()
-//          .put("gameId", gameId)
           .put("id", playerId)
           .put("type", Type.CONNECTION.toString())
           .put("connection", true)
@@ -39,7 +25,7 @@ public final class WebSocketUtils {
         session.sendMessage(new TextMessage(connectionMessage));
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Ошибка при отправке сообщения через web-socket.", e);
     }
   }
 
@@ -57,7 +43,7 @@ public final class WebSocketUtils {
         session.sendMessage(new TextMessage(resultMessage));
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Ошибка при отправке сообщения через web-socket.", e);
     }
   }
 
@@ -67,7 +53,7 @@ public final class WebSocketUtils {
         session.sendMessage(new TextMessage(textMessage)); //HtmlUtils.htmlEscape(message)
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Ошибка при отправке сообщения через web-socket.", e);
     }
   }
 }

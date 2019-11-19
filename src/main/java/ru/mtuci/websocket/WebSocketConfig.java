@@ -1,4 +1,4 @@
-package ru.mtuci.config;
+package ru.mtuci.websocket;
 
 import java.util.Map;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +10,6 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-import ru.mtuci.websocket.EventHandler;
 
 @Configuration
 @EnableWebSocket
