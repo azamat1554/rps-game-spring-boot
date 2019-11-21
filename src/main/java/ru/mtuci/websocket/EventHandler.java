@@ -11,6 +11,7 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import ru.mtuci.model.GameResult;
 import ru.mtuci.model.GameSession;
 import ru.mtuci.model.Player;
 import ru.mtuci.service.GameService;
@@ -80,19 +81,20 @@ public class EventHandler extends TextWebSocketHandler {
 
     Player opponent = gameSession.getOpponent(currentPlayerId);
     if (currentPlayer.getChoice() != null && opponent.getChoice() != null) {
-      play(gameSession, currentPlayer, opponent);
+      play(currentPlayer, opponent);
     }
   }
 
-  private void play(GameSession gameSession, Player player, Player opponent) {
+  private void play(Player player, Player opponent) {
     if (player.getChoice() == opponent.getChoice()) {
       WebSocketUtils.sendResultMessage(
           player.getSession(), player.getId(), Result.DRAW, player.getChoice());
       WebSocketUtils.sendResultMessage(
           opponent.getSession(), opponent.getId(), Result.DRAW, player.getChoice());
     } else {
-      Player winner = getWinner(player, opponent);
-      Player loser = gameSession.getOpponent(winner.getId());
+      GameResult gameResult = getGameResult(player, opponent);
+      Player winner = gameResult.getWinner();
+      Player loser = gameResult.getLoser();
       WebSocketUtils.sendResultMessage(
           winner.getSession(), winner.getId(), Result.WIN, loser.getChoice());
       WebSocketUtils.sendResultMessage(
@@ -103,17 +105,22 @@ public class EventHandler extends TextWebSocketHandler {
     opponent.setChoice(null);
   }
 
-  private Player getWinner(Player player1, Player player2) {
+  private GameResult getGameResult(Player player1, Player player2) {
     PlayerChoice choiceP1 = player1.getChoice();
     PlayerChoice choiceP2 = player2.getChoice();
+    Player winner;
+    Player loser;
 
     if ((choiceP1 == PlayerChoice.ROCK && choiceP2 == PlayerChoice.SCISSORS) ||
         (choiceP1 == PlayerChoice.PAPER && choiceP2 == PlayerChoice.ROCK) ||
         (choiceP1 == PlayerChoice.SCISSORS && choiceP2 == PlayerChoice.PAPER)) {
-      return player1;
+      winner = player1;
+      loser = player2;
     } else {
-      return player2;
+      winner = player2;
+      loser = player1;
     }
+    return new GameResult(winner, loser);
   }
 
   private String getGameId(WebSocketSession session) {
