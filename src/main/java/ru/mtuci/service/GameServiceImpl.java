@@ -71,7 +71,7 @@ public class GameServiceImpl implements GameService {
         results.add(new GameResult(secondPlayer, firstChoice, Result.LOSE));
       } else {
         results.add(new GameResult(firstPlayer, secondChoice, Result.LOSE));
-        results.add(new GameResult(secondPlayer, secondChoice, Result.WIN));
+        results.add(new GameResult(secondPlayer, firstChoice, Result.WIN));
       }
     }
     return results;
