@@ -1,63 +1,28 @@
 package ru.mtuci.service;
 
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 import org.springframework.stereotype.Service;
-import ru.mtuci.model.GameSession;
+import ru.mtuci.model.Game;
+import ru.mtuci.model.GameResult;
 import ru.mtuci.model.Player;
 
 /**
  * Project: rps-game
  */
 @Service
-public class GameService {
+public interface GameService {
 
-  /**
-   * Хранит игровые сессии
-   */
-  // TODO как очищать статые сессии?
-  private final Map<String, GameSession> gameSessions = new ConcurrentHashMap<>();
+  String createGame();
 
-  public String createGameSession() {
-    String gameId = generateGameId();
-    GameSession gameSession = new GameSession(gameId);
-    gameSessions.put(gameId, gameSession);
-    return gameId;
-  }
+  void addPlayer(String gameId, Player player);
 
-  public void addPlayer(String gameId, Player player) {
-    GameSession gameSession = gameSessions.get(gameId);
-    gameSession.addPlayer(player);
-  }
+  boolean hasGame(String gameId);
 
-  public boolean hasNotGameSession(String gameId) {
-    if (gameId != null) {
-      return !gameSessions.containsKey(gameId);
-    }
-    return true;
-  }
+  Game getGame(String gameId);
 
-  public GameSession getGameSession(String gameId) {
-    return gameSessions.get(gameId);
-  }
+  List<GameResult> play(Game game);
 
-  public void remove(String gameId) {
-    gameSessions.remove(gameId);
-  }
+  Game remove(String gameId);
 
-  public boolean isReady(String gameId) {
-    if (gameId != null && gameSessions.containsKey(gameId)) {
-      return gameSessions.get(gameId).isReady();
-    }
-    return false;
-  }
-
-  private String generateGameId() {
-    return Long.toHexString(UUID.randomUUID().getMostSignificantBits());
-  }
-
-  public String generatePlayerId() {
-    return UUID.randomUUID().toString();
-  }
+  boolean isReadyStartGame(String gameId);
 }

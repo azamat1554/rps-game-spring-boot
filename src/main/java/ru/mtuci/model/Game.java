@@ -1,33 +1,36 @@
 package ru.mtuci.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.web.socket.WebSocketSession;
 
 /**
  * Project rps-game
  */
-public class GameSession {
+public class Game {
 
   public static final int PLAYERS_IN_GAME = 2;
 
-  private String gameId;
+  private final String id;
   private final Map<String, Player> players = new ConcurrentHashMap<>(PLAYERS_IN_GAME);
 
-  public GameSession(String gameId) {
-    this.gameId = gameId;
+  public Game() {
+    this.id = generateGameId();
+  }
+
+  public String getId() {
+    return id;
   }
 
   public void addPlayer(Player player) {
     players.put(player.getId(), player);
   }
 
-  public boolean isReady() {
-    return players.size() == PLAYERS_IN_GAME;
+  public int getPlayersNumber() {
+    return players.size();
   }
 
   public Player getPlayer(String playerId) {
@@ -38,6 +41,11 @@ public class GameSession {
     return new ArrayList<>(players.values());
   }
 
+  public boolean haveChoiceAllPlayers() {
+    return players.values().stream()
+        .allMatch(player -> player.getChoice() != null);
+  }
+
   public Player getOpponent(String playerId) {
     return players.entrySet().stream()
         .filter(playerEntry -> !playerEntry.getKey().equals(playerId))
@@ -46,10 +54,14 @@ public class GameSession {
         .orElseThrow();
   }
 
+  private String generateGameId() {
+    return Long.toHexString(UUID.randomUUID().getMostSignificantBits());
+  }
+
   @Override
   public String toString() {
-    return "GameSession{" +
-        "gameId='" + gameId + '\'' +
+    return "Game{" +
+        "gameId='" + id + '\'' +
         ", players=" + players +
         '}';
   }

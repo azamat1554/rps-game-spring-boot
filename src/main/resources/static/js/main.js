@@ -31,15 +31,32 @@ window.onload = function init() {
 };
 
 async function connectToGame() {
-  let hash = location.hash.replace('#', '');
+  let gameId = location.hash.replace('#', '');
+
+  if (await isExistGame(gameId)) {
+    return gameId;
+  }
+
+  return await createNewGame();
+}
+
+async function isExistGame(gameId) {
+  if (gameId !== "") {
+    let response = await fetch(
+        "http://" + location.host + "/connection/" + gameId);
+
+    return response.status === 200;
+  }
+  return false;
+}
+
+async function createNewGame() {
   let response = await fetch(
-      "http://" + location.host + "/connection?gameId=" + hash);
+      "http://" + location.host + "/connection");
 
   let json = await response.json();
-  if (response.status === 201) {
-    window.location.hash = json.gameId;
-    urlInput.value = window.location.href;
-  }
+  window.location.hash = json.gameId;
+  urlInput.value = window.location.href;
   return json.gameId;
 }
 

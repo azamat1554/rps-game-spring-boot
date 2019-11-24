@@ -2,6 +2,7 @@ package ru.mtuci.websocket;
 
 import static ru.mtuci.websocket.WebSocketConfig.Consts.GAME_ID_ATTRIBUTE;
 
+import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -11,8 +12,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+import ru.mtuci.model.Game;
 import ru.mtuci.model.GameResult;
-import ru.mtuci.model.GameSession;
 import ru.mtuci.model.Player;
 import ru.mtuci.service.GameService;
 
@@ -31,11 +32,11 @@ public class EventHandler extends TextWebSocketHandler {
   public void afterConnectionEstablished(WebSocketSession session) throws Exception {
     log.info("Socket Connected");
     String gameId = getGameId(session);
-    Player newPlayer = new Player(session, gameService.generatePlayerId());
+    Player newPlayer = new Player(session);
     gameService.addPlayer(gameId, newPlayer);
 
-    if (gameService.isReady(gameId)) {
-      for (Player player : gameService.getGameSession(gameId).getPlayers()) {
+    if (gameService.isReadyStartGame(gameId)) {
+      for (Player player : gameService.getGame(gameId).getPlayers()) {
         WebSocketUtils.sendConnectionMessage(player.getSession(), player.getId());
       }
     }
@@ -46,7 +47,12 @@ public class EventHandler extends TextWebSocketHandler {
     log.info("Socket Closed: [{}] {}", closeStatus.getCode(), closeStatus.getReason());
 
     String gameId = getGameId(session);
-    gameService.remove(gameId);
+    Game finishedGame = gameService.remove(gameId);
+    if (finishedGame != null) {
+      for (Player player : finishedGame.getPlayers()) {
+        player.getSession().close();
+      }
+    }
   }
 
   @Override
@@ -56,13 +62,13 @@ public class EventHandler extends TextWebSocketHandler {
       String gameId = getGameId(session);
       JSONObject jsonMessage = new JSONObject(message.getPayload());
 
-      switch (Type.valueOf(jsonMessage.getString("type"))) {
-        case MESSAGE:
-          Player opponent = gameService.getGameSession(gameId).getOpponent(jsonMessage.getString("id"));
-          WebSocketUtils.sendChatMessage(opponent.getSession(), message.getPayload());
-          break;
-        case RESULT:
-          handleResultMessage(gameId, jsonMessage);
+      Type type = Type.valueOf(jsonMessage.getString("type"));
+      if (type == Type.MESSAGE) {
+        Player opponent = gameService.getGame(gameId)
+            .getOpponent(jsonMessage.getString("id"));
+        WebSocketUtils.sendChatMessage(opponent.getSession(), message.getPayload());
+      } else if (type == Type.RESULT) {
+        handleResultMessage(gameId, jsonMessage);
       }
     } catch (JSONException e) {
       log.error("Невалидный формат json.", e);
@@ -75,52 +81,19 @@ public class EventHandler extends TextWebSocketHandler {
     PlayerChoice choice = PlayerChoice.valueOf(jsonMessage.getString("choice"));
     String currentPlayerId = jsonMessage.getString("id");
 
-    GameSession gameSession = gameService.getGameSession(gameId);
-    Player currentPlayer = gameSession.getPlayer(currentPlayerId);
+    Game game = gameService.getGame(gameId);
+    Player currentPlayer = game.getPlayer(currentPlayerId);
     currentPlayer.setChoice(choice);
 
-    Player opponent = gameSession.getOpponent(currentPlayerId);
-    if (currentPlayer.getChoice() != null && opponent.getChoice() != null) {
-      play(currentPlayer, opponent);
+    if (game.haveChoiceAllPlayers()) {
+      List<GameResult> gameResults = gameService.play(game);
+      for (GameResult result : gameResults) {
+        Player player = result.getPlayer();
+        WebSocketUtils.sendResultMessage(
+            player.getSession(), player.getId(), result.getResult(), result.getOpponentChoice());
+        player.setChoice(null);
+      }
     }
-  }
-
-  private void play(Player player, Player opponent) {
-    if (player.getChoice() == opponent.getChoice()) {
-      WebSocketUtils.sendResultMessage(
-          player.getSession(), player.getId(), Result.DRAW, player.getChoice());
-      WebSocketUtils.sendResultMessage(
-          opponent.getSession(), opponent.getId(), Result.DRAW, player.getChoice());
-    } else {
-      GameResult gameResult = getGameResult(player, opponent);
-      Player winner = gameResult.getWinner();
-      Player loser = gameResult.getLoser();
-      WebSocketUtils.sendResultMessage(
-          winner.getSession(), winner.getId(), Result.WIN, loser.getChoice());
-      WebSocketUtils.sendResultMessage(
-          loser.getSession(), loser.getId(), Result.LOSE, winner.getChoice());
-    }
-
-    player.setChoice(null);
-    opponent.setChoice(null);
-  }
-
-  private GameResult getGameResult(Player player1, Player player2) {
-    PlayerChoice choiceP1 = player1.getChoice();
-    PlayerChoice choiceP2 = player2.getChoice();
-    Player winner;
-    Player loser;
-
-    if ((choiceP1 == PlayerChoice.ROCK && choiceP2 == PlayerChoice.SCISSORS) ||
-        (choiceP1 == PlayerChoice.PAPER && choiceP2 == PlayerChoice.ROCK) ||
-        (choiceP1 == PlayerChoice.SCISSORS && choiceP2 == PlayerChoice.PAPER)) {
-      winner = player1;
-      loser = player2;
-    } else {
-      winner = player2;
-      loser = player1;
-    }
-    return new GameResult(winner, loser);
   }
 
   private String getGameId(WebSocketSession session) {

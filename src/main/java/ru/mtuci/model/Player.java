@@ -1,40 +1,33 @@
 package ru.mtuci.model;
 
 import java.util.Objects;
+import java.util.UUID;
 import org.springframework.web.socket.WebSocketSession;
 import ru.mtuci.websocket.PlayerChoice;
 
 /**
- * Created by azamat on 11/30/16.
+ * Project: rps-game
  */
 public class Player {
 
-  private String id;
-  private WebSocketSession session;
-  //выбор игрока (камень, ножныцы или бумага)
+  private final String id;
+  private final WebSocketSession session;
+  //выбор игрока (камень, ножницы или бумага)
   private PlayerChoice choice;
   //счет за несколько игр
-  private Integer score = 0;
+  private int score = 0;
 
-  public Player(WebSocketSession session, String id) {
+  public Player(WebSocketSession session) {
+    this.id = generatePlayerId();
     this.session = session;
-    this.id = id;
   }
 
   //=========================================
   //=               Methods                 =
   //=========================================
-
-//  public boolean isConnected() {
-//      if (opponent != null /*&& opponent.isActive()*/) {
-//          return true;
-//      }
-//    return false;
-//  }
-
-//    public boolean isActive() {
-//        return session.isOpen();
-//    }
+  private String generatePlayerId() {
+    return UUID.randomUUID().toString();
+  }
 
   public int incrementScore() {
     return score++;
@@ -51,10 +44,6 @@ public class Player {
 
   public WebSocketSession getSession() {
     return session;
-  }
-
-  public void setSession(WebSocketSession session) {
-    this.session = session;
   }
 
   public int incrementAndGetScore() {
@@ -85,17 +74,15 @@ public class Player {
       return false;
     }
     Player player = (Player) o;
-    return Objects.equals(id, player.id) &&
-        choice == player.choice &&
-        Objects.equals(score, player.score);
+    return score == player.score &&
+        Objects.equals(id, player.id) &&
+        Objects.equals(session, player.session) &&
+        choice == player.choice;
   }
 
   @Override
   public int hashCode() {
-    int result = id != null ? id.hashCode() : 0;
-    result = 31 * result + (choice != null ? choice.hashCode() : 0);
-    result = 31 * result + (score != null ? score.hashCode() : 0);
-    return result;
+    return Objects.hash(id, session, choice, score);
   }
 
   @Override

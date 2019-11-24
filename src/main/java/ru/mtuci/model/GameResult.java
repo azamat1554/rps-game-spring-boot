@@ -1,24 +1,32 @@
 package ru.mtuci.model;
 
+import ru.mtuci.websocket.PlayerChoice;
+import ru.mtuci.websocket.Result;
+
 /**
- * @author Azamat_Abidokov
- * Date: 21-Nov-19
+ * Project: rps-game
  */
 public class GameResult {
 
-  private final Player winner;
-  private final Player loser;
+  private final Player player;
+  private final PlayerChoice opponentChoice;
+  private final Result result;
 
-  public GameResult(Player winner, Player loser) {
-    this.winner = winner;
-    this.loser = loser;
+  public GameResult(Player player, PlayerChoice opponentChoice, Result result) {
+    this.player = player;
+    this.opponentChoice = opponentChoice;
+    this.result = result;
   }
 
-  public Player getWinner() {
-    return winner;
+  public Player getPlayer() {
+    return player;
   }
 
-  public Player getLoser() {
-    return loser;
+  public PlayerChoice getOpponentChoice() {
+    return opponentChoice;
+  }
+
+  public Result getResult() {
+    return result;
   }
 }

@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mtuci.service.GameService;
 
@@ -33,15 +33,21 @@ public class ConnectionController {
    * @return Возвращает JSON строку, содержащую идентификатор игры.
    */
   @GetMapping
-  public ResponseEntity<String> connect(@RequestParam(value = "gameId", required = false) String gameId) {
-    log.info("New connection gameId={}", gameId);
-    if (gameService.hasNotGameSession(gameId)) {
-      String newGameId = gameService.createGameSession();
+  public ResponseEntity<String> connect() {
+    log.info("New connection");
+      String newGameId = gameService.createGame();
       return ResponseEntity
           .status(HttpStatus.CREATED)
           .body(new JSONObject().put("gameId", newGameId).toString());
+  }
+
+  @GetMapping("{gameId}")
+  public ResponseEntity<String> connect(@PathVariable("gameId") String gameId) {
+    log.info("New connection gameId={}", gameId);
+    if (gameService.hasGame(gameId)) {
+      return ResponseEntity.ok(new JSONObject().put("gameId", gameId).toString());
     }
 
-    return ResponseEntity.ok(new JSONObject().put("gameId", gameId).toString());
+    return ResponseEntity.notFound().build();
   }
 }

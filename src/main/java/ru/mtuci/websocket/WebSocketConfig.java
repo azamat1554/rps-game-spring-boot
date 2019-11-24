@@ -10,6 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
 @Configuration
 @EnableWebSocket
@@ -30,12 +31,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry.addHandler(eventHandler, "/game/*")
-        .addInterceptors(auctionInterceptor())
+        .addInterceptors(interceptor())
         .setAllowedOrigins("*");
   }
 
   @Bean
-  public HandshakeInterceptor auctionInterceptor() {
+  public HandshakeInterceptor interceptor() {
     return new HandshakeInterceptor() {
       public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
           WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
@@ -54,5 +55,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
         // Nothing to do after handshake
       }
     };
+  }
+
+  @Bean
+  public ServletServerContainerFactoryBean createWebSocketContainer() {
+    ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
+    container.setMaxSessionIdleTimeout(5 * 60 * 1000L);
+    return container;
   }
 }
