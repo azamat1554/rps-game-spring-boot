@@ -1,7 +1,5 @@
 package ru.mtuci.websocket;
 
-import static ru.mtuci.websocket.WebSocketConfig.Consts.GAME_ID_ATTRIBUTE;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -15,6 +13,8 @@ import ru.mtuci.model.GameResult;
 import ru.mtuci.model.GameSession;
 import ru.mtuci.model.Player;
 import ru.mtuci.service.GameService;
+
+import static ru.mtuci.websocket.WebSocketConfig.Consts.GAME_ID_ATTRIBUTE;
 
 @Component
 public class EventHandler extends TextWebSocketHandler {
@@ -106,11 +106,13 @@ public class EventHandler extends TextWebSocketHandler {
   }
 
   private GameResult getGameResult(Player player1, Player player2) {
+    // TODO: Возможность сыграть -- этой логика игрока. Этот метод должен быть в классе Player, а не здесь
+    // допустим метод GameResult play(Player opponent), там сравниваешь this и opponent, т.е.
+    // логику убираешь на свой слой -- кому она принадлежит
     PlayerChoice choiceP1 = player1.getChoice();
     PlayerChoice choiceP2 = player2.getChoice();
     Player winner;
     Player loser;
-
     if ((choiceP1 == PlayerChoice.ROCK && choiceP2 == PlayerChoice.SCISSORS) ||
         (choiceP1 == PlayerChoice.PAPER && choiceP2 == PlayerChoice.ROCK) ||
         (choiceP1 == PlayerChoice.SCISSORS && choiceP2 == PlayerChoice.PAPER)) {

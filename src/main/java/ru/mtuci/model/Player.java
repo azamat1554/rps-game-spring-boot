@@ -1,12 +1,14 @@
 package ru.mtuci.model;
 
-import java.util.Objects;
 import org.springframework.web.socket.WebSocketSession;
 import ru.mtuci.websocket.PlayerChoice;
+
+import java.util.Objects;
 
 /**
  * Created by azamat on 11/30/16.
  */
+//TODO: Нужно ломбок, потому что переедут методы сюда из других классов и будет спагетти код
 public class Player {
 
   private String id;
@@ -14,6 +16,7 @@ public class Player {
   //выбор игрока (камень, ножныцы или бумага)
   private PlayerChoice choice;
   //счет за несколько игр
+  // int ?
   private Integer score = 0;
 
   public Player(WebSocketSession session, String id) {

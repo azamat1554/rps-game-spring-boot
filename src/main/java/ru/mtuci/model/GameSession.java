@@ -1,18 +1,16 @@
 package ru.mtuci.model;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.web.socket.WebSocketSession;
 
 /**
  * Project rps-game
  */
+// TODO: Плохое название. Сложно разобраться, путаешься с WebSession. Мне кажется должно быть просто Game
 public class GameSession {
-
   public static final int PLAYERS_IN_GAME = 2;
 
   private String gameId;

@@ -19,6 +19,7 @@ public class ConnectionController {
 
   private static final Logger log = LoggerFactory.getLogger(ConnectionController.class);
 
+  //TODO: Нужно добавить ломбок, стереть конструктор, добавить @RequiredArgsConstructor над классом, и везде избавиться от геттеров сеттеров и конструкторов
   private final GameService gameService;
 
   public ConnectionController(GameService gameService) {
@@ -35,6 +36,11 @@ public class ConnectionController {
   @GetMapping
   public ResponseEntity<String> connect(@RequestParam(value = "gameId", required = false) String gameId) {
     log.info("New connection gameId={}", gameId);
+     /* TODO: Советую делать REST сервисы всегда краткими и без лишней логики.
+     * чтобы когда смотришь, можно было понять какой объект принимает и возвращает.
+     * В данном случае, я бы перенес логику внутрь сервиса и назвал бы его connect, незачем здесь два return
+     * коды никому не сдались, достаточно 200-ого
+     * */
     if (gameService.hasNotGameSession(gameId)) {
       String newGameId = gameService.createGameSession();
       return ResponseEntity
