@@ -17,11 +17,19 @@ import ru.mtuci.model.GameResult;
 import ru.mtuci.model.Player;
 import ru.mtuci.service.GameService;
 
+/**
+ * Класс реализующий обработку событий веб-сокет сессии. В этом классе выполняется
+ * обработка всех сообщений от клиета отправленных через веб-сокет. А также отправка
+ * веб-сокет сообщений.
+ */
 @Component
 public class EventHandler extends TextWebSocketHandler {
 
   private static final Logger log = LoggerFactory.getLogger(EventHandler.class);
 
+  /**
+   * Инкапсулирует игровую бизнес локику
+   */
   private GameService gameService;
 
   public EventHandler(GameService gameService) {

@@ -1,7 +1,7 @@
 package ru.mtuci.websocket;
 
 /**
- * Created by azamat on 12/2/16.
+ * Перечисление возможных исходов игры: победа, поражение, ничья.
  */
 public enum Result {
     WIN, LOSE, DRAW;

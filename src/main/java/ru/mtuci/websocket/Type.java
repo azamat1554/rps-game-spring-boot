@@ -1,8 +1,19 @@
 package ru.mtuci.websocket;
 
 /**
- * Created by azamat on 12/3/16.
+ * Перечисление возможных типов сообщений, которые чередаются через Веб-сокет.
  */
 public enum Type {
-    RESULT, MESSAGE, CONNECTION
+    /**
+     * Выбор игрока (камень, ножницы или бумага)
+     */
+    RESULT,
+    /**
+     * Сообщение в чате
+     */
+    MESSAGE,
+    /**
+     * Сообщение для уведомления игроков о старте игры
+     */
+    CONNECTION
 }

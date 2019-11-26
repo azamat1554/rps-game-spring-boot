@@ -7,7 +7,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 /**
- * Класс реализующий методы отправки JSON сообщений.
+ * Класс реализующий методы отправки JSON сообщений через веб-сокет.
  */
 public final class WebSocketUtils {
 

@@ -14,6 +14,8 @@ import ru.mtuci.websocket.PlayerChoice;
 import ru.mtuci.websocket.Result;
 
 /**
+ * Реализация игрового сервиса.
+ *
  * Project: rps-game
  */
 @Service

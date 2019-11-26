@@ -13,7 +13,7 @@ window.onload = function init() {
 
   //установка обработчиков
   urlInput.onfocus = function (event) {
-    var r = document.createRange();
+    let r = document.createRange();
     r.selectNode(event.target);
     window.getSelection().addRange(r);
   };
@@ -69,9 +69,10 @@ function createWebSocketConnection(gameId) {
 }
 
 //============================================
-//            WebSocket methods
+//    Методы жизненного цикла WebSocket'а
 //============================================
 
+// вызывается при закрытии WebSocket сессии
 function onClose(event) {
   if (event.wasClean) {
     console.log('Соединение закрыто чисто');
@@ -87,11 +88,12 @@ function onClose(event) {
   }
 }
 
+// вызывается при каких-либо ошибках в WebSocket сессии
 function onError(error) {
   console.log("Ошибка " + error.message);
 }
 
-//метод который вызывается, когда приходят сообщения
+// вызывается, когда приходят сообщения
 function onMessage(event) {
   console.log('onMessage: ' + event.data.toString());
 
@@ -111,7 +113,7 @@ function onMessage(event) {
 }
 
 //===========================================
-//   Methods for handling messages
+//     Методы для обработки сообщений
 //===========================================
 
 function showMessage(message, isYour) {
@@ -127,20 +129,6 @@ function showMessage(message, isYour) {
   let block = document.getElementById('message-body');
   block.appendChild(parentElem);
   block.scrollTop = block.scrollHeight; //чтобы прокручивалось в конец
-}
-
-function sendMessage(message) {
-  let msgJObj = {
-    id: playerId,
-    type: "MESSAGE",
-    message: message
-  };
-
-  try {
-    socket.send(JSON.stringify(msgJObj));
-  } catch (exp) {
-    console.log(exp)
-  }
 }
 
 function showResult(resultObj) {
@@ -187,16 +175,6 @@ function toggleHidden(elements, start, end) {
   }
 }
 
-function sendResult(choice) {
-  var object = {
-    id: playerId,
-    type: "RESULT",
-    choice: choice
-  };
-
-  socket.send(JSON.stringify(object));
-}
-
 function showConnection(connection) {
   if (connection) {
     if (!document.getElementById('cover')) {
@@ -207,11 +185,12 @@ function showConnection(connection) {
 }
 
 //=========================================
-//   Methods for event handling
+//   Методы обработки клиентских событий
 //=========================================
 
+// обработка отправки сообщения в чат
 function clickSend() {
-  var message = chatInput.value.trim();
+  let message = chatInput.value.trim();
   if (!message) {
     return;
   }
@@ -220,9 +199,10 @@ function clickSend() {
   chatInput.value = '';
 
   showMessage(message, true);
-  sendMessage(message);
+  sendChatMessage(message);
 }
 
+// обработка клика по картинке (камень, ножницы, бумага)
 function clickImage(event) {
   let target = event.target;
 
@@ -236,7 +216,7 @@ function clickImage(event) {
 
   currentChoice = target;
 
-  var children = document.querySelector('#select-box').children;
+  let children = document.querySelector('#select-box').children;
 
   toggleHidden(children, 1, 4);
   children[0].firstElementChild.hidden = true;
@@ -255,12 +235,32 @@ function clickImage(event) {
     setTimeout(toggleHidden, 500, children, 4, children.length);
   }
 
-  setTimeout(sendResult, 500, target.getAttribute('data-choice'));
+  setTimeout(sendChoice, 500, target.getAttribute('data-choice'));
 }
 
-//==============================================
-//          Methods for cover window
-//==============================================
+function sendChoice(choice) {
+  let choiceMessage = {
+    id: playerId,
+    type: "RESULT",
+    choice: choice
+  };
+
+  socket.send(JSON.stringify(choiceMessage));
+}
+
+function sendChatMessage(message) {
+  let msgJObj = {
+    id: playerId,
+    type: "MESSAGE",
+    message: message
+  };
+
+  try {
+    socket.send(JSON.stringify(msgJObj));
+  } catch (exp) {
+    console.log(exp)
+  }
+}
 
 // Показать полупрозрачный DIV, затеняющий всю страницу
 function showCover(reason) {

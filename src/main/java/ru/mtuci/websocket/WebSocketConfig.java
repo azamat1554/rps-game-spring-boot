@@ -12,17 +12,26 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
 
+/**
+ * Класс конфигурации веб-сокет сессии. Здесь настраивается путь для подключения к сокету,
+ * время сессии и т.п.
+ *
+ * Project: rps-game
+ */
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
-
-  private final EventHandler eventHandler;
 
   public static class Consts {
 
     public static final String GAME_ID_ATTRIBUTE = "gameId";
 
   }
+
+  /**
+   * Обработчик всех событий веб-сокет сессии
+   */
+  private final EventHandler eventHandler;
 
   public WebSocketConfig(EventHandler eventHandler) {
     this.eventHandler = eventHandler;
@@ -57,10 +66,15 @@ public class WebSocketConfig implements WebSocketConfigurer {
     };
   }
 
+  /**
+   * Устанавливает максимальное время простоя в миллисекундах.
+   * Если в течение этого времени не будет передано ни одного сообщения -
+   * сессия автоматического закроется.
+   */
   @Bean
   public ServletServerContainerFactoryBean createWebSocketContainer() {
     ServletServerContainerFactoryBean container = new ServletServerContainerFactoryBean();
-    container.setMaxSessionIdleTimeout(5 * 60 * 1000L);
+    container.setMaxSessionIdleTimeout(5 * 60 * 1000L); // время простоя в миллисекундах
     return container;
   }
 }

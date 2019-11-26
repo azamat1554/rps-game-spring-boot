@@ -8,6 +8,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Хранит состояние игры
+ * <p>
  * Project rps-game
  */
 public class Game {
@@ -15,6 +17,9 @@ public class Game {
   public static final int PLAYERS_IN_GAME = 2;
 
   private final String id;
+  /**
+   * Мапа игроков
+   */
   private final Map<String, Player> players = new ConcurrentHashMap<>(PLAYERS_IN_GAME);
 
   public Game() {

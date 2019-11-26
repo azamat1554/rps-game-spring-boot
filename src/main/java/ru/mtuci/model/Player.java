@@ -6,6 +6,8 @@ import org.springframework.web.socket.WebSocketSession;
 import ru.mtuci.websocket.PlayerChoice;
 
 /**
+ * Класс хранит свойства игрока, которые необходимы для данного приложения.
+ * <p>
  * Project: rps-game
  */
 public class Player {
@@ -36,7 +38,6 @@ public class Player {
   //==========================================
   //=            Getter & Setter             =
   //==========================================
-
 
   public String getId() {
     return id;

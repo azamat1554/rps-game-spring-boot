@@ -4,6 +4,8 @@ import ru.mtuci.websocket.PlayerChoice;
 import ru.mtuci.websocket.Result;
 
 /**
+ * Результат игры
+ * <p>
  * Project: rps-game
  */
 public class GameResult {

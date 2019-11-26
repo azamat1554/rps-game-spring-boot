@@ -1,15 +1,15 @@
 package ru.mtuci.service;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
 import ru.mtuci.model.Game;
 import ru.mtuci.model.GameResult;
 import ru.mtuci.model.Player;
 
 /**
+ * Определяет возможные игровые действия
+ * <p>
  * Project: rps-game
  */
-@Service
 public interface GameService {
 
   String createGame();

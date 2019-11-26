@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.mtuci.service.GameService;
 
-
+/**
+ * Контроллер используется для создания игровой сессии. HTTP запросы обрабатываются контроллером.
+ */
 @RestController
 @RequestMapping("/connection")
 public class ConnectionController {
@@ -27,8 +29,6 @@ public class ConnectionController {
 
   /**
    * Создает новую игровую сессию и возвращает ее идентификатор.
-   * В случае, если игровая сессия с принятым <code>gameId</code> уже существует,
-   * тогда просто возвращается полученный идентификатор игры.
    *
    * @return Возвращает JSON строку, содержащую идентификатор игры.
    */
@@ -41,11 +41,17 @@ public class ConnectionController {
           .body(new JSONObject().put("gameId", newGameId).toString());
   }
 
+  /**
+   * Проверяет существует ли игровая сессия с принятым <code>gameId</code>.
+   *
+   * @return возвращается статус 200 ОК если игровая сессия существует, иначе 404 NOT FOUND.
+   */
   @GetMapping("{gameId}")
   public ResponseEntity<String> connect(@PathVariable("gameId") String gameId) {
-    log.info("New connection gameId={}", gameId);
+    log.info("Connection by gameId={}", gameId);
+    //TODO Что будет если 3ий игрок захочет подключиться?
     if (gameService.hasGame(gameId)) {
-      return ResponseEntity.ok(new JSONObject().put("gameId", gameId).toString());
+      return ResponseEntity.ok().build();
     }
 
     return ResponseEntity.notFound().build();
