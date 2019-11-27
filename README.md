@@ -18,5 +18,5 @@
 
 Полезные материалы:
 ================
-[Spring для ленивых. Основы, базовые концепции и примеры с кодом. Часть 1](https://javarush.ru/groups/posts/spring-framework-java-1)
+[Spring для ленивых. Основы, базовые концепции и примеры с кодом. Часть 1](https://javarush.ru/groups/posts/spring-framework-java-1)<br>
 [Руководство для начинающих по HTTP и REST](https://code.tutsplus.com/ru/tutorials/a-beginners-guide-to-http-and-rest--net-16340)<br>
