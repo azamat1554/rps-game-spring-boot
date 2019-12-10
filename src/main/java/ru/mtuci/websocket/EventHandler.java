@@ -101,6 +101,9 @@ public class EventHandler extends TextWebSocketHandler {
             player.getSession(), player.getId(), result.getResult(), result.getOpponentChoice());
         player.setChoice(null);
       }
+    } else {
+      Player opponent = gameService.getGame(gameId).getOpponent(currentPlayerId);
+      WebSocketUtils.sendStatusMessage(opponent.getSession());
     }
   }
 
